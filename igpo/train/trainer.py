@@ -91,7 +91,7 @@ def build_model_and_tokenizer(cfg: TrainConfig, device: torch.device):
     dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
     model = AutoModelForCausalLM.from_pretrained(
         cfg.model_name,
-        torch_dtype=dtype,
+        dtype=dtype,
         trust_remote_code=True,
         device_map="auto" if torch.cuda.is_available() else None,
     )

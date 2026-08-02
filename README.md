@@ -1,7 +1,9 @@
 # IGPO Agentic Search（Colab 复现）
 
 [![Paper](https://img.shields.io/badge/Paper-arXiv%3A2510.14967-b31b1b)](https://arxiv.org/abs/2510.14967)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/annikawang/igpo-agentic-search/blob/main/notebooks/train_igpo_colab.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ankknaiii/igpo-agentic-search/blob/main/notebooks/train_igpo_colab.ipynb)
+
+> Colab 打开后点 **Runtime → T4 GPU**，直接从第 1 格跑：会自动 `git clone` 本仓库（无需再上传 zip）。
 
 > 高标准、可解释的 **Information Gain-based Policy Optimization (IGPO)** 复现：  
 > GRPO 框架 + Agentic Search 多轮过程奖励 + Colab/T4 可跑通。

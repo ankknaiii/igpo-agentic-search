@@ -30,6 +30,22 @@ YOUR THINKING PROCESS
 You should always follow the above two formats strictly.
 Only output the final answer (in words, numbers or phrase) inside the <answer></answer> tag, without any explanations or extra information.
 If this is a yes-or-no question, you should only answer yes or no.
+
+Example (search then answer):
+<think>
+I should search for the capital of France.
+</think>
+<tool_call>
+{"name": "web_search", "arguments": {"query": "capital of France"}}
+</tool_call>
+
+After tool results arrive, either search again or answer:
+<think>
+The results say Paris is the capital.
+</think>
+<answer>
+Paris
+</answer>
 """
 
 
