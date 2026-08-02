@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.env
+outputs/
+*.pt
+*.bin
+*.safetensors
+.DS_Store
+.ipynb_checkpoints/
+wandb/
+cache/

@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "igpo-agentic-search"
+version = "0.1.0"
+description = "Colab-friendly reproduction of Information Gain-based Policy Optimization (IGPO) for multi-turn search agents"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "IGPO Reproduction" }]
+dependencies = [
+  "torch>=2.1.0",
+  "transformers>=4.45.0",
+  "accelerate>=0.33.0",
+  "peft>=0.12.0",
+  "datasets>=2.20.0",
+  "numpy>=1.24.0",
+  "pyyaml>=6.0",
+  "tqdm>=4.66.0",
+  "matplotlib>=3.8.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["igpo*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
