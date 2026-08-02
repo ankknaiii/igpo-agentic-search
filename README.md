@@ -1,52 +1,46 @@
-# IGPO Agentic Search（Colab 复现）
+# Information Gain-based Policy Optimization for Multi-Turn Search Agents
 
 [![Paper](https://img.shields.io/badge/Paper-arXiv%3A2510.14967-b31b1b)](https://arxiv.org/abs/2510.14967)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ankknaiii/igpo-agentic-search/blob/main/notebooks/train_igpo_colab.ipynb)
 
-> Colab 打开后点 **Runtime → T4 GPU**，直接从第 1 格跑：会自动 `git clone` 本仓库（无需再上传 zip）。
+Reproduction of [Wang et al., ICLR 2026](https://arxiv.org/abs/2510.14967): turn-level information-gain rewards for agentic search under a GRPO-style objective.
 
-> 高标准、可解释的 **Information Gain-based Policy Optimization (IGPO)** 复现：  
-> GRPO 框架 + Agentic Search 多轮过程奖励 + Colab/T4 可跑通。
+Reference implementation (multi-node / veRL): https://github.com/GuoqingWang1/IGPO
 
-论文：*Information Gain-based Policy Optimization: A Simple and Effective Approach for Multi-Turn Search Agents* (ICLR 2026)  
-官方完整训练代码（8×A100 / veRL）：https://github.com/GuoqingWang1/IGPO
+This repository is a compact, Colab-runnable reimplementation of the core algorithm (Eq. 3–8), intended for method verification and ablation on limited GPUs.
 
----
+## Motivation
 
-## 问题：Advantage Collapse
+Outcome-only GRPO assigns a single scalar reward per rollout. With small group sizes, two failure modes are common:
 
-小 group size 时，常见两种情况：
+| Query difficulty | Within-group outcomes | Group-relative advantage |
+|------------------|----------------------|---------------------------|
+| Easy | All correct | Collapse to zero |
+| Hard | All incorrect | Collapse to zero |
 
-| 样本 | group 内 rollout | outcome reward | group advantage |
-|------|------------------|----------------|-----------------|
-| 特别简单 | 全对 | 全是 1 | **全 0** |
-| 特别困难 | 全错 | 全是 0 | **全 0** |
+Zero advantage yields no policy gradient. Multi-turn search additionally lacks credit assignment across tool-use turns.
 
-advantage=0 → 梯度=0 → 这批样本白采。多轮 search 还缺 turn-level credit assignment。
+## Method
 
-## 方法：信息增益过程奖励
-
-把每一轮与环境交互看成获取信息。若本轮有效，策略对 GT 的置信应上升：
+Each agent–environment turn is treated as an incremental update of the policy’s belief about the ground-truth answer. Under teacher forcing:
 
 ```text
-π(a | q, o≤t) = exp( mean_j log π(a_j | q, o≤t, a_<j) )   # teacher forcing
-r_t = π(a | q, o≤t) - π(a | q, o≤t-1)                       # t < T  (prob_diff)
-r_T = F1(â, a) 或格式惩罚                                     # 终局
+π_θ(a | q, o_≤t) = exp( (1/L) Σ_j log π_θ(a_j | q, o_≤t, a_<j) )
+r_t = π_θ(a | q, o_≤t) - π_θ(a | q, o_≤t-1) ,   1 ≤ t < T
+r_T = F1(â, a)   # or format penalty
 ```
 
-然后：
+`prob_diff` matches the paper’s primary definition; `log_prob_diff` is also supported. Rewards are z-normalized within each group (`separate` or `joint`), then converted to discounted turn-level advantages:
 
-1. group 内对 IG / F1 **separate z-norm**（或 joint）
-2. `Ã_t = Σ_{k≥t} γ^{k-t} A_k` 折扣回传
-3. 用 turn-level advantage 做 GRPO-style clipped surrogate（tool response mask 掉）
+```text
+Ã_t = Σ_{k=t}^{T} γ^{k-t} A_k
+```
 
-特性：**内生、ground-truth-aware、低 cost、不易 reward hacking**（相对 MCTS / 外部 RM）。
+Tool responses are masked from the surrogate loss. The optimization objective follows GRPO with turn-indexed advantages (Eq. 8).
 
----
+## Setup
 
-## 快速开始
-
-### 本地单测（无需 GPU）
+### Local
 
 ```bash
 pip install -e ".[dev]"
@@ -54,53 +48,45 @@ python scripts/smoke_test.py
 pytest -q
 ```
 
-### Colab 训练
+### Colab
 
-点上方 **Open in Colab**，或打开：
+Open the notebook badge above. Select a T4 GPU runtime, then execute cells in order. Cell 1 clones this repository automatically.
 
-`notebooks/train_igpo_colab.ipynb`
+Default backbone: `Qwen/Qwen2.5-0.5B-Instruct` with LoRA. Larger instruct checkpoints (1.5B / 3B) may be substituted via `TrainConfig.model_name` when memory allows.
 
-默认：`Qwen2.5-0.5B-Instruct` + LoRA，`group_size=4`，mock 检索库（无需 Serper）。
-
-### 对照 GRPO
+### Algorithm switch
 
 ```python
-TrainConfig(algo="grpo", ...)  # outcome-only
-TrainConfig(algo="igpo", ...)  # IG + F1
+TrainConfig(algo="grpo")  # outcome reward only
+TrainConfig(algo="igpo")  # information gain + outcome
 ```
 
-关注指标：`collapse_rate`（越低越好）、`mean_f1`、`mean_abs_ig`。
+Primary logged metrics: `collapse_rate`, `mean_f1`, `mean_abs_ig`.
 
----
-
-## 仓库结构
+## Layout
 
 ```text
 igpo/
-  rewards/          # F1 outcome + info-gain process reward
-  advantage/        # group z-norm + discounted turn advantage
-  algo/             # clipped surrogate (GRPO/IGPO)
-  env/              # mock KB search
-  agent/            # multi-turn rollout + belief tracking
-  train/            # Colab trainer
+  rewards/       outcome F1; information-gain process reward
+  advantage/     group normalization; discounted turn advantages
+  algo/          clipped surrogate objective
+  env/           offline mock retrieval
+  agent/         multi-turn rollout and belief tracking
+  train/         LoRA trainer
 notebooks/train_igpo_colab.ipynb
 tests/
 scripts/smoke_test.py
 ```
 
----
+## Scope relative to the official release
 
-## 与官方代码的关系
-
-| | 本仓库 | 官方 IGPO |
-|--|--------|-----------|
-| 目标 | Colab 可跑、算法可讲清、作品集级复现 | 论文级多卡训练 |
-| 框架 | 自研精简 trainer | veRL + Ray |
-| 检索 | mock KB | Google/Bing API |
-| 模型 | 0.5B/1.5B + LoRA | Qwen2.5-7B 全参 |
-| 算法 | 与论文 Eq.3–8 / 官方 `prob_diff`+`separate` 对齐 | 完整实现 |
-
----
+| Aspect | This repo | Official IGPO |
+|--------|-----------|---------------|
+| Compute | Single GPU / Colab T4 | 8×A100 |
+| Stack | Lightweight trainer | veRL + Ray |
+| Retrieval | Deterministic mock KB | Live web search API |
+| Model | 0.5B–3B + LoRA | Qwen2.5-7B |
+| Algorithm | Aligned with Eq. 3–8; `prob_diff` + `separate` | Full training system |
 
 ## Citation
 
