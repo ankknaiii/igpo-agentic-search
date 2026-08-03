@@ -1,0 +1,200 @@
+{"id": "train_1", "question": "Which film whose director is younger, College Lovers or The Dixie Flyer?", "answer": "College Lovers", "difficulty": "hard", "hops": 2}
+{"id": "train_2", "question": "When is Augusta Marie of Holstein-Gottorp's mother's birthday?", "answer": "22 November 1610", "difficulty": "hard", "hops": 2}
+{"id": "train_3", "question": "What is the capital of France?", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_4", "question": "In which city is the Eiffel Tower located?", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_5", "question": "Who designed the Eiffel Tower?", "answer": "Gustave Eiffel", "difficulty": "medium", "hops": 1}
+{"id": "train_6", "question": "What is the capital of the country where the Eiffel Tower is located?", "answer": "Paris", "difficulty": "hard", "hops": 2}
+{"id": "train_7", "question": "What is the longest river in China?", "answer": "Yangtze", "difficulty": "medium", "hops": 1}
+{"id": "train_8", "question": "What is the capital of the country through which the Yangtze flows?", "answer": "Beijing", "difficulty": "hard", "hops": 2}
+{"id": "train_9", "question": "Who is widely considered the father of theoretical computer science?", "answer": "Alan Turing", "difficulty": "medium", "hops": 1}
+{"id": "train_10", "question": "Where did Alan Turing study?", "answer": "University of Cambridge", "difficulty": "medium", "hops": 1}
+{"id": "train_11", "question": "Who directed College Lovers?", "answer": "John G. Adolfi", "difficulty": "easy", "hops": 1}
+{"id": "train_12", "question": "When was Duchess Marie Elisabeth of Saxony born?", "answer": "22 November 1610", "difficulty": "easy", "hops": 1}
+{"id": "train_13", "question": "What is the capital of the United Kingdom?", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_14", "question": "What river flows through London?", "answer": "River Thames", "difficulty": "easy", "hops": 1}
+{"id": "train_15", "question": "What is the capital of Germany?", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_16", "question": "What is the capital of Japan?", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_17", "question": "What is the highest mountain in Japan?", "answer": "Mount Fuji", "difficulty": "medium", "hops": 1}
+{"id": "train_18", "question": "What is the capital of Egypt?", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_19", "question": "Which river flows through Egypt?", "answer": "Nile", "difficulty": "medium", "hops": 1}
+{"id": "train_20", "question": "What is the capital of Brazil?", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_21", "question": "Where was Albert Einstein born?", "answer": "Ulm", "difficulty": "medium", "hops": 1}
+{"id": "train_22", "question": "Who developed the theory of relativity?", "answer": "Albert Einstein", "difficulty": "easy", "hops": 1}
+{"id": "train_23", "question": "Who painted the Mona Lisa?", "answer": "Leonardo da Vinci", "difficulty": "easy", "hops": 1}
+{"id": "train_24", "question": "Where is the Mona Lisa housed?", "answer": "Louvre Museum", "difficulty": "medium", "hops": 1}
+{"id": "train_25", "question": "In which city is the Louvre Museum located?", "answer": "Paris", "difficulty": "medium", "hops": 1}
+{"id": "train_26", "question": "Who was the first person to walk on the Moon?", "answer": "Neil Armstrong", "difficulty": "easy", "hops": 1}
+{"id": "train_27", "question": "Which mission first landed humans on the Moon?", "answer": "Apollo 11", "difficulty": "medium", "hops": 1}
+{"id": "train_28", "question": "Who co-discovered the structure of DNA with Francis Crick?", "answer": "James Watson", "difficulty": "medium", "hops": 1}
+{"id": "train_29", "question": "Who wrote Hamlet?", "answer": "Shakespeare", "difficulty": "easy", "hops": 1}
+{"id": "train_30", "question": "Where was William Shakespeare born?", "answer": "Stratford-upon-Avon", "difficulty": "medium", "hops": 1}
+{"id": "train_31", "question": "Who originated the concept of a programmable computer with the Analytical Engine?", "answer": "Charles Babbage", "difficulty": "medium", "hops": 1}
+{"id": "train_32", "question": "Who wrote notes on Charles Babbage's Analytical Engine?", "answer": "Ada Lovelace", "difficulty": "medium", "hops": 1}
+{"id": "train_33", "question": "What green pigment is essential for photosynthesis?", "answer": "Chlorophyll", "difficulty": "easy", "hops": 1}
+{"id": "train_34", "question": "What is the largest ocean on Earth?", "answer": "Pacific Ocean", "difficulty": "easy", "hops": 1}
+{"id": "train_35", "question": "Where did Isaac Newton study?", "answer": "University of Cambridge", "difficulty": "medium", "hops": 1}
+{"id": "train_36", "question": "In which country did Marie Curie conduct much of her research?", "answer": "France", "difficulty": "hard", "hops": 2}
+{"id": "train_37", "question": "What is the capital of the country where Mount Fuji is located?", "answer": "Tokyo", "difficulty": "hard", "hops": 2}
+{"id": "train_38", "question": "What is the capital of the country where the Nile flows to the Mediterranean?", "answer": "Cairo", "difficulty": "hard", "hops": 2}
+{"id": "train_39", "question": "What is the capital of the country that contains much of the Amazon River basin?", "answer": "Brasília", "difficulty": "hard", "hops": 2}
+{"id": "train_40", "question": "In which country was Albert Einstein born?", "answer": "Germany", "difficulty": "medium", "hops": 1}
+{"id": "train_41", "question": "What museum in Paris houses the Mona Lisa?", "answer": "Louvre Museum", "difficulty": "medium", "hops": 1}
+{"id": "train_42", "question": "Who directed The Dixie Flyer?", "answer": "Charles J. Hunt", "difficulty": "easy", "hops": 1}
+{"id": "train_43", "question": "When was John G. Adolfi born?", "answer": "February 19, 1888", "difficulty": "medium", "hops": 1}
+{"id": "train_44", "question": "When was Charles J. Hunt born?", "answer": "April 8, 1881", "difficulty": "medium", "hops": 1}
+{"id": "train_45", "question": "What is the capital of China?", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_46", "question": "What currency is used in France?", "answer": "euro", "difficulty": "easy", "hops": 1}
+{"id": "train_47", "question": "On which river is Paris located?", "answer": "River Seine", "difficulty": "medium", "hops": 1}
+{"id": "train_48", "question": "Who designed the Eiffel Tower's company project completed in 1889?", "answer": "Gustave Eiffel", "difficulty": "easy", "hops": 1}
+{"id": "train_49", "question": "Name the capital city of France.", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_50", "question": "Which city serves as the capital of France?", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_51", "question": "France's capital city is?", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_52", "question": "Name the capital city of Germany.", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_53", "question": "Which city serves as the capital of Germany?", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_54", "question": "Germany's capital city is?", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_55", "question": "Name the capital city of Japan.", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_56", "question": "Which city serves as the capital of Japan?", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_57", "question": "Japan's capital city is?", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_58", "question": "Name the capital city of Egypt.", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_59", "question": "Which city serves as the capital of Egypt?", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_60", "question": "Egypt's capital city is?", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_61", "question": "Name the capital city of Brazil.", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_62", "question": "Which city serves as the capital of Brazil?", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_63", "question": "Brazil's capital city is?", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_64", "question": "Name the capital city of China.", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_65", "question": "Which city serves as the capital of China?", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_66", "question": "China's capital city is?", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_67", "question": "What is the capital of United Kingdom?", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_68", "question": "Name the capital city of United Kingdom.", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_69", "question": "Which city serves as the capital of United Kingdom?", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_70", "question": "United Kingdom's capital city is?", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_71", "question": "What capital city is associated with Eiffel Tower?", "answer": "Paris", "difficulty": "medium", "hops": 2}
+{"id": "train_72", "question": "Which capital is linked to Eiffel Tower?", "answer": "Paris", "difficulty": "medium", "hops": 2}
+{"id": "train_73", "question": "What capital city is associated with Mount Fuji?", "answer": "Tokyo", "difficulty": "medium", "hops": 2}
+{"id": "train_74", "question": "Which capital is linked to Mount Fuji?", "answer": "Tokyo", "difficulty": "medium", "hops": 2}
+{"id": "train_75", "question": "What capital city is associated with Great Wall of China?", "answer": "Beijing", "difficulty": "medium", "hops": 2}
+{"id": "train_76", "question": "Which capital is linked to Great Wall of China?", "answer": "Beijing", "difficulty": "medium", "hops": 2}
+{"id": "train_77", "question": "What capital city is associated with Louvre Museum?", "answer": "Paris", "difficulty": "medium", "hops": 2}
+{"id": "train_78", "question": "Which capital is linked to Louvre Museum?", "answer": "Paris", "difficulty": "medium", "hops": 2}
+{"id": "train_79", "question": "What capital city is associated with River Thames?", "answer": "London", "difficulty": "medium", "hops": 2}
+{"id": "train_80", "question": "Which capital is linked to River Thames?", "answer": "London", "difficulty": "medium", "hops": 2}
+{"id": "train_81", "question": "Where did Alan Turing historically study?", "answer": "University of Cambridge", "difficulty": "medium", "hops": 1}
+{"id": "train_82", "question": "Regarding Alan Turing: Where did they study?", "answer": "University of Cambridge", "difficulty": "medium", "hops": 1}
+{"id": "train_83", "question": "Where did Isaac Newton historically study?", "answer": "University of Cambridge", "difficulty": "medium", "hops": 1}
+{"id": "train_84", "question": "Regarding Isaac Newton: Where did they study?", "answer": "University of Cambridge", "difficulty": "medium", "hops": 1}
+{"id": "train_85", "question": "Which mission included Neil Armstrong as commander of the lunar landing?", "answer": "Apollo 11", "difficulty": "medium", "hops": 1}
+{"id": "train_86", "question": "Regarding Neil Armstrong: Which mission included they as commander of the lunar landing?", "answer": "Apollo 11", "difficulty": "medium", "hops": 1}
+{"id": "train_87", "question": "Which famous portrait is attributed to Leonardo da Vinci?", "answer": "Mona Lisa", "difficulty": "easy", "hops": 1}
+{"id": "train_88", "question": "Regarding Leonardo da Vinci: Which famous portrait is attributed to they?", "answer": "Mona Lisa", "difficulty": "easy", "hops": 1}
+{"id": "train_89", "question": "Which tragedy is written by William Shakespeare?", "answer": "Hamlet", "difficulty": "easy", "hops": 1}
+{"id": "train_90", "question": "Regarding William Shakespeare: Which tragedy is written by they?", "answer": "Hamlet", "difficulty": "easy", "hops": 1}
+{"id": "train_91", "question": "Which Paris landmark is associated with Gustave Eiffel?", "answer": "Eiffel Tower", "difficulty": "easy", "hops": 1}
+{"id": "train_92", "question": "Regarding Gustave Eiffel: Which Paris landmark is associated with they?", "answer": "Eiffel Tower", "difficulty": "easy", "hops": 1}
+{"id": "train_93", "question": "Which molecule's structure did James Watson help discover?", "answer": "DNA", "difficulty": "medium", "hops": 1}
+{"id": "train_94", "question": "Which molecule's structure did James Watson historically help discover?", "answer": "DNA", "difficulty": "medium", "hops": 1}
+{"id": "train_95", "question": "Regarding James Watson: Which molecule's structure did they help discover?", "answer": "DNA", "difficulty": "medium", "hops": 1}
+{"id": "train_96", "question": "Which molecule's structure did Francis Crick help discover?", "answer": "DNA", "difficulty": "medium", "hops": 1}
+{"id": "train_97", "question": "Which molecule's structure did Francis Crick historically help discover?", "answer": "DNA", "difficulty": "medium", "hops": 1}
+{"id": "train_98", "question": "Regarding Francis Crick: Which molecule's structure did they help discover?", "answer": "DNA", "difficulty": "medium", "hops": 1}
+{"id": "train_99", "question": "On which phenomenon did Marie Curie conduct pioneering research?", "answer": "Radioactivity", "difficulty": "medium", "hops": 1}
+{"id": "train_100", "question": "On which phenomenon did Marie Curie historically conduct pioneering research?", "answer": "Radioactivity", "difficulty": "medium", "hops": 1}
+{"id": "train_101", "question": "Regarding Marie Curie: On which phenomenon did they conduct pioneering research?", "answer": "Radioactivity", "difficulty": "medium", "hops": 1}
+{"id": "train_102", "question": "Which theory is Albert Einstein known for developing?", "answer": "Theory of relativity", "difficulty": "easy", "hops": 1}
+{"id": "train_103", "question": "Regarding Albert Einstein: Which theory is they known for developing?", "answer": "Theory of relativity", "difficulty": "easy", "hops": 1}
+{"id": "train_104", "question": "Which computing design is associated with Charles Babbage?", "answer": "Analytical Engine", "difficulty": "medium", "hops": 1}
+{"id": "train_105", "question": "Regarding Charles Babbage: Which computing design is associated with they?", "answer": "Analytical Engine", "difficulty": "medium", "hops": 1}
+{"id": "train_106", "question": "On which machine did Ada Lovelace write influential notes?", "answer": "Analytical Engine", "difficulty": "medium", "hops": 1}
+{"id": "train_107", "question": "On which machine did Ada Lovelace historically write influential notes?", "answer": "Analytical Engine", "difficulty": "medium", "hops": 1}
+{"id": "train_108", "question": "Regarding Ada Lovelace: On which machine did they write influential notes?", "answer": "Analytical Engine", "difficulty": "medium", "hops": 1}
+{"id": "train_109", "question": "Which film did John G. Adolfi direct?", "answer": "College Lovers", "difficulty": "easy", "hops": 1}
+{"id": "train_110", "question": "Which film did John G. Adolfi historically direct?", "answer": "College Lovers", "difficulty": "easy", "hops": 1}
+{"id": "train_111", "question": "Regarding John G. Adolfi: Which film did they direct?", "answer": "College Lovers", "difficulty": "easy", "hops": 1}
+{"id": "train_112", "question": "Which film did Charles J. Hunt direct?", "answer": "The Dixie Flyer", "difficulty": "easy", "hops": 1}
+{"id": "train_113", "question": "Which film did Charles J. Hunt historically direct?", "answer": "The Dixie Flyer", "difficulty": "easy", "hops": 1}
+{"id": "train_114", "question": "Regarding Charles J. Hunt: Which film did they direct?", "answer": "The Dixie Flyer", "difficulty": "easy", "hops": 1}
+{"id": "train_115", "question": "Identify the capital of France (item 115).", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_116", "question": "Identify the capital of Germany (item 116).", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_117", "question": "Identify the capital of Japan (item 117).", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_118", "question": "Identify the capital of Egypt (item 118).", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_119", "question": "Identify the capital of Brazil (item 119).", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_120", "question": "Identify the capital of China (item 120).", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_121", "question": "Identify the capital of United Kingdom (item 121).", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_122", "question": "Identify the capital of France (item 122).", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_123", "question": "Identify the capital of Germany (item 123).", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_124", "question": "Identify the capital of Japan (item 124).", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_125", "question": "Identify the capital of Egypt (item 125).", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_126", "question": "Identify the capital of Brazil (item 126).", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_127", "question": "Identify the capital of China (item 127).", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_128", "question": "Identify the capital of United Kingdom (item 128).", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_129", "question": "Identify the capital of France (item 129).", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_130", "question": "Identify the capital of Germany (item 130).", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_131", "question": "Identify the capital of Japan (item 131).", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_132", "question": "Identify the capital of Egypt (item 132).", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_133", "question": "Identify the capital of Brazil (item 133).", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_134", "question": "Identify the capital of China (item 134).", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_135", "question": "Identify the capital of United Kingdom (item 135).", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_136", "question": "Identify the capital of France (item 136).", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_137", "question": "Identify the capital of Germany (item 137).", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_138", "question": "Identify the capital of Japan (item 138).", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_139", "question": "Identify the capital of Egypt (item 139).", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_140", "question": "Identify the capital of Brazil (item 140).", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_141", "question": "Identify the capital of China (item 141).", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_142", "question": "Identify the capital of United Kingdom (item 142).", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_143", "question": "Identify the capital of France (item 143).", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_144", "question": "Identify the capital of Germany (item 144).", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_145", "question": "Identify the capital of Japan (item 145).", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_146", "question": "Identify the capital of Egypt (item 146).", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_147", "question": "Identify the capital of Brazil (item 147).", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_148", "question": "Identify the capital of China (item 148).", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_149", "question": "Identify the capital of United Kingdom (item 149).", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_150", "question": "Identify the capital of France (item 150).", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_151", "question": "Identify the capital of Germany (item 151).", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_152", "question": "Identify the capital of Japan (item 152).", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_153", "question": "Identify the capital of Egypt (item 153).", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_154", "question": "Identify the capital of Brazil (item 154).", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_155", "question": "Identify the capital of China (item 155).", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_156", "question": "Identify the capital of United Kingdom (item 156).", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_157", "question": "Identify the capital of France (item 157).", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_158", "question": "Identify the capital of Germany (item 158).", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_159", "question": "Identify the capital of Japan (item 159).", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_160", "question": "Identify the capital of Egypt (item 160).", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_161", "question": "Identify the capital of Brazil (item 161).", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_162", "question": "Identify the capital of China (item 162).", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_163", "question": "Identify the capital of United Kingdom (item 163).", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_164", "question": "Identify the capital of France (item 164).", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_165", "question": "Identify the capital of Germany (item 165).", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_166", "question": "Identify the capital of Japan (item 166).", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_167", "question": "Identify the capital of Egypt (item 167).", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_168", "question": "Identify the capital of Brazil (item 168).", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_169", "question": "Identify the capital of China (item 169).", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_170", "question": "Identify the capital of United Kingdom (item 170).", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_171", "question": "Identify the capital of France (item 171).", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_172", "question": "Identify the capital of Germany (item 172).", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_173", "question": "Identify the capital of Japan (item 173).", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_174", "question": "Identify the capital of Egypt (item 174).", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_175", "question": "Identify the capital of Brazil (item 175).", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_176", "question": "Identify the capital of China (item 176).", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_177", "question": "Identify the capital of United Kingdom (item 177).", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_178", "question": "Identify the capital of France (item 178).", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_179", "question": "Identify the capital of Germany (item 179).", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_180", "question": "Identify the capital of Japan (item 180).", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_181", "question": "Identify the capital of Egypt (item 181).", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_182", "question": "Identify the capital of Brazil (item 182).", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_183", "question": "Identify the capital of China (item 183).", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_184", "question": "Identify the capital of United Kingdom (item 184).", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_185", "question": "Identify the capital of France (item 185).", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_186", "question": "Identify the capital of Germany (item 186).", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_187", "question": "Identify the capital of Japan (item 187).", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_188", "question": "Identify the capital of Egypt (item 188).", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_189", "question": "Identify the capital of Brazil (item 189).", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_190", "question": "Identify the capital of China (item 190).", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_191", "question": "Identify the capital of United Kingdom (item 191).", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_192", "question": "Identify the capital of France (item 192).", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_193", "question": "Identify the capital of Germany (item 193).", "answer": "Berlin", "difficulty": "easy", "hops": 1}
+{"id": "train_194", "question": "Identify the capital of Japan (item 194).", "answer": "Tokyo", "difficulty": "easy", "hops": 1}
+{"id": "train_195", "question": "Identify the capital of Egypt (item 195).", "answer": "Cairo", "difficulty": "easy", "hops": 1}
+{"id": "train_196", "question": "Identify the capital of Brazil (item 196).", "answer": "Brasília", "difficulty": "easy", "hops": 1}
+{"id": "train_197", "question": "Identify the capital of China (item 197).", "answer": "Beijing", "difficulty": "easy", "hops": 1}
+{"id": "train_198", "question": "Identify the capital of United Kingdom (item 198).", "answer": "London", "difficulty": "easy", "hops": 1}
+{"id": "train_199", "question": "Identify the capital of France (item 199).", "answer": "Paris", "difficulty": "easy", "hops": 1}
+{"id": "train_200", "question": "Identify the capital of Germany (item 200).", "answer": "Berlin", "difficulty": "easy", "hops": 1}

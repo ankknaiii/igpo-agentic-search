@@ -1,4 +1,11 @@
-"""Multi-turn agentic search rollout with IG belief tracking."""
+"""Multi-turn agentic search rollout with information-gain belief tracking.
+
+Sampling token ids are retained without decode–encode round-trips so that
+importance-sampling ratios remain well-defined under GRPO/IGPO updates.
+
+References:
+    Wang et al., IGPO, ICLR 2026, arXiv:2510.14967.
+"""
 
 from __future__ import annotations
 
@@ -27,15 +34,19 @@ _ANSWER_RE = re.compile(r"<answer>.*?</answer>", flags=re.DOTALL | re.IGNORECASE
 
 @dataclass
 class TurnRecord:
+    """Single interaction turn within a rollout."""
+
     role: str  # assistant | tool
     text: str
     token_ids: list[int] = field(default_factory=list)
-    # True for assistant decision tokens; False for tool responses (masked in loss).
+    # Decision tokens receive gradient; tool responses are masked.
     is_decision: bool = True
 
 
 @dataclass
 class RolloutResult:
+    """Complete multi-turn trajectory with process and outcome rewards."""
+
     question: str
     ground_truth: str
     turns: list[TurnRecord]
@@ -45,15 +56,11 @@ class RolloutResult:
     num_search_turns: int
     finished_with_answer: bool
     prompt_ids: list[int]
-    # Cumulative contexts used for IG: [turn0_prompt, after_turn1, ...]
     context_checkpoints: list[list[int]] = field(default_factory=list)
 
     @property
     def full_text(self) -> str:
-        parts = []
-        for t in self.turns:
-            parts.append(t.text)
-        return "\n".join(parts)
+        return "\n".join(t.text for t in self.turns)
 
     @property
     def assistant_text(self) -> str:
@@ -61,16 +68,19 @@ class RolloutResult:
 
 
 def parse_tool_query(text: str) -> str | None:
+    """Extract the search query from a structured tool call.
+
+    Compatibility with the shorthand ``<search>query</search>`` format is retained.
+    """
     match = _TOOL_CALL_RE.search(text)
     if not match:
-        # Tolerate <search>query</search> shorthand.
         m2 = re.search(r"<search>(.*?)</search>", text, flags=re.DOTALL | re.IGNORECASE)
         return m2.group(1).strip() if m2 else None
     raw = match.group(1)
     try:
         obj = json.loads(raw)
     except json.JSONDecodeError:
-        # Very loose fallback: extract query string.
+        # 兜底处理：提取 query 字符串。
         m = re.search(r'"query"\s*:\s*"([^"]+)"', raw)
         return m.group(1).strip() if m else None
     args = obj.get("arguments", obj)
@@ -81,6 +91,7 @@ def parse_tool_query(text: str) -> str | None:
 
 
 def has_final_answer(text: str) -> bool:
+    """Return whether the assistant turn contains a final answer without a tool call."""
     return bool(_ANSWER_RE.search(text)) and parse_tool_query(text) is None
 
 
@@ -114,7 +125,7 @@ class SearchRolloutEngine:
         text = self.tokenizer.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )
-        # Align with official IGPO: force a think prefix for structured generation.
+        # Align with the official IGPO prompt convention by forcing a think prefix.
         text = text + "<think>"
         ids = self.tokenizer(text, add_special_tokens=False, return_tensors="pt")[
             "input_ids"
@@ -122,7 +133,12 @@ class SearchRolloutEngine:
         return ids.to(self.device)
 
     @torch.no_grad()
-    def _generate_assistant(self, messages: list[dict]) -> str:
+    def _generate_assistant(self, messages: list[dict]) -> tuple[str, list[int]]:
+        """Sample an assistant continuation and return (text, sampled_token_ids).
+
+        Token ids are taken directly from ``generate`` outputs. Decode–encode
+        round-trips are prohibited to preserve importance-sampling validity.
+        """
         input_ids = self._messages_to_ids(messages).unsqueeze(0)
         attention_mask = torch.ones_like(input_ids)
         gen = self.model.generate(
@@ -136,18 +152,23 @@ class SearchRolloutEngine:
             eos_token_id=self.tokenizer.eos_token_id,
         )
         new_tokens = gen[0, input_ids.shape[1] :]
-        continuation = self.tokenizer.decode(new_tokens, skip_special_tokens=True)
-        # We already prefixed <think>; ensure the tag is present in stored text.
+        token_ids = new_tokens.detach().cpu().tolist()
+        continuation = self.tokenizer.decode(new_tokens, skip_special_tokens=False)
         if not continuation.lstrip().startswith("<think>") and not continuation.lstrip().startswith(
             "</think>"
         ):
             text = "<think>" + continuation
         else:
-            text = continuation if continuation.lstrip().startswith("<think>") else "<think>" + continuation
-        return text.strip()
+            text = (
+                continuation
+                if continuation.lstrip().startswith("<think>")
+                else "<think>" + continuation
+            )
+        return text.strip(), token_ids
 
     @torch.no_grad()
     def rollout(self, question: str, ground_truth: str) -> RolloutResult:
+        """Roll out one multi-turn trajectory and compute IG / outcome rewards."""
         messages = [
             {"role": "system", "content": build_system_prompt()},
             {"role": "user", "content": build_user_prompt(question)},
@@ -157,7 +178,6 @@ class SearchRolloutEngine:
         info_gains: list[float] = []
         checkpoints: list[list[int]] = []
 
-        # Turn 0 belief: prompt only.
         prompt_ids = self._messages_to_ids(messages)
         checkpoints.append(prompt_ids.detach().cpu().tolist())
         b0 = teacher_force_answer_logprobs(
@@ -169,11 +189,8 @@ class SearchRolloutEngine:
         finished = False
         search_turns = 0
 
-        for step in range(self.max_turns):
-            assistant_text = self._generate_assistant(messages)
-            asst_ids = self.tokenizer(
-                assistant_text, add_special_tokens=False
-            ).input_ids
+        for _step in range(self.max_turns):
+            assistant_text, asst_ids = self._generate_assistant(messages)
             turns.append(
                 TurnRecord(
                     role="assistant",
@@ -190,10 +207,9 @@ class SearchRolloutEngine:
 
             query = parse_tool_query(assistant_text)
             if query is None:
-                # Malformed / no tool call — stop and score as format failure later.
                 break
 
-            results = search_kb(query, top_k=self.search_top_k)
+            results = search_kb(query, top_k=self.search_top_k, noise=True)
             tool_text = (
                 f"<tool_response>\n{format_search_results(results)}\n</tool_response>"
             )
@@ -209,7 +225,6 @@ class SearchRolloutEngine:
             messages.append({"role": "user", "content": tool_text})
             search_turns += 1
 
-            # Belief after this interaction turn (before next assistant generation).
             ctx_ids = self._messages_to_ids(messages)
             checkpoints.append(ctx_ids.detach().cpu().tolist())
             bt = teacher_force_answer_logprobs(
@@ -218,18 +233,18 @@ class SearchRolloutEngine:
             beliefs.append(bt)
             cur_value = belief_value(bt, self.info_gain_type)  # type: ignore[arg-type]
             ig = float(cur_value - prev_value)
-            if ig != ig or ig in (float("inf"), float("-inf")):  # NaN/Inf
+            if ig != ig or ig in (float("inf"), float("-inf")):
                 ig = 0.0
-            # Avoid exact-zero IG being dropped by !=0 heuristics in token packing.
-            if ig == 0.0:
-                ig = 1e-10
             info_gains.append(ig)
             prev_value = cur_value
 
-        outcome = compute_outcome_reward(
-            turns[-1].text if turns else "",
-            ground_truth,
-        )
+        last_assistant_text = ""
+        for turn in reversed(turns):
+            if turn.role == "assistant":
+                last_assistant_text = turn.text
+                break
+        outcome = compute_outcome_reward(last_assistant_text, ground_truth)
+
         return RolloutResult(
             question=question,
             ground_truth=ground_truth,

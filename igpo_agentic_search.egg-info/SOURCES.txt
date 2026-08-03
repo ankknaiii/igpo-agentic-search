@@ -1,3 +1,4 @@
+LICENSE
 README.md
 pyproject.toml
 igpo/__init__.py
@@ -10,6 +11,8 @@ igpo/algo/__init__.py
 igpo/algo/losses.py
 igpo/env/__init__.py
 igpo/env/mock_kb.py
+igpo/eval/__init__.py
+igpo/eval/evaluator.py
 igpo/rewards/__init__.py
 igpo/rewards/f1.py
 igpo/rewards/info_gain.py

@@ -1,16 +1,22 @@
-"""Word-level F1 and format checks used by IGPO outcome rewards."""
+"""Word-level F1 and structural format checks for outcome rewards.
+
+References:
+    Wang et al., IGPO, ICLR 2026, Eq. 2.
+"""
 
 from __future__ import annotations
 
 import re
 import string
+from collections import Counter
 from typing import Iterable
 
 
-_TAGS = ("think", "tool_call", "answer", "search")
+_TAG_RE = re.compile(r"</?(think|answer|search|tool_response|tool_call)>", re.IGNORECASE)
 
 
 def preprocess_text(text: str) -> str:
+    """Normalize text for token-level F1 comparison."""
     text = text.lower()
     for punct in string.punctuation:
         text = text.replace(punct, " ")
@@ -18,6 +24,7 @@ def preprocess_text(text: str) -> str:
 
 
 def extract_answer(solution_str: str) -> str | None:
+    """Extract content inside the first ``<answer>`` span."""
     match = re.search(r"<answer>(.*?)</answer>", solution_str, flags=re.DOTALL | re.IGNORECASE)
     if not match:
         return None
@@ -25,32 +32,32 @@ def extract_answer(solution_str: str) -> str | None:
 
 
 def check_tags_balance(solution_str: str) -> bool:
-    for tag in _TAGS:
-        start, end = f"<{tag}>", f"</{tag}>"
-        if solution_str.count(start) != solution_str.count(end):
-            return False
-        pos = -1
-        while True:
-            start_pos = solution_str.find(start, pos + 1)
-            if start_pos < 0:
-                break
-            end_pos = solution_str.find(end, start_pos)
-            if end_pos < 0:
+    """Validate XML-style nesting of structured tags via a stack."""
+    stack: list[str] = []
+    for m in _TAG_RE.finditer(solution_str):
+        tag = m.group(1).lower()
+        is_close = m.group(0).startswith("</")
+        if is_close:
+            if not stack or stack[-1] != tag:
                 return False
-            pos = end_pos
-    return True
+            stack.pop()
+        else:
+            stack.append(tag)
+    return len(stack) == 0
 
 
 def word_f1(pred: str, gold: str) -> float:
-    pred_tokens = set(preprocess_text(pred).split())
-    gold_tokens = set(preprocess_text(gold).split())
+    """Compute SQuAD-style word-level F1 with token multiplicity."""
+    pred_tokens = preprocess_text(pred).split()
+    gold_tokens = preprocess_text(gold).split()
     if not pred_tokens or not gold_tokens:
         return 0.0
-    common = pred_tokens & gold_tokens
-    if not common:
+    common = Counter(pred_tokens) & Counter(gold_tokens)
+    num_same = sum(common.values())
+    if num_same == 0:
         return 0.0
-    precision = len(common) / len(pred_tokens)
-    recall = len(common) / len(gold_tokens)
+    precision = num_same / len(pred_tokens)
+    recall = num_same / len(gold_tokens)
     return 2 * precision * recall / (precision + recall)
 
 
@@ -61,9 +68,16 @@ def compute_outcome_reward(
     format_penalty: float = -2.0,
     require_format: bool = True,
 ) -> dict:
-    """Outcome reward used at the answer turn (paper Eq. 2).
+    """Compute the outcome reward used at the answer turn (Eq. 2).
 
-    Returns dict with keys: reward, f1, em, format_ok, answer.
+    Args:
+        solution_str: Assistant text to be scored.
+        ground_truth: Reference answer string or list of alternatives.
+        format_penalty: Penalty assigned when structural constraints are violated.
+        require_format: Whether structural validity is enforced.
+
+    Returns:
+        Dictionary with keys ``reward``, ``f1``, ``em``, ``format_ok``, ``answer``.
     """
     if isinstance(ground_truth, str):
         golds = [g for g in ground_truth.split("<|answer_split|>") if g.strip()]
@@ -84,9 +98,7 @@ def compute_outcome_reward(
 
     answer = answer or ""
     f1 = max((word_f1(answer, g) for g in golds), default=0.0)
-    em = float(
-        any(preprocess_text(answer) == preprocess_text(g) for g in golds)
-    )
+    em = float(any(preprocess_text(answer) == preprocess_text(g) for g in golds))
     return {
         "reward": float(f1),
         "f1": float(f1),

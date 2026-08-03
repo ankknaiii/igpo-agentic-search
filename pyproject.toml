@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "igpo-agentic-search"
 version = "0.1.0"
-description = "Colab-friendly reproduction of Information Gain-based Policy Optimization (IGPO) for multi-turn search agents"
+description = "Lightweight reproduction of Information Gain-based Policy Optimization (IGPO) for multi-turn search agents"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -16,7 +16,9 @@ dependencies = [
   "accelerate>=0.33.0",
   "peft>=0.12.0",
   "datasets>=2.20.0",
+  "modelscope>=1.18.0",
   "numpy>=1.24.0",
+  "scipy>=1.11.0",
   "pyyaml>=6.0",
   "tqdm>=4.66.0",
   "matplotlib>=3.8.0",

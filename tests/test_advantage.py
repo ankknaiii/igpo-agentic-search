@@ -16,6 +16,12 @@ def test_discounted_advantages_gamma_one():
     assert discounted_turn_advantages([0.1, 0.2, 1.0], gamma=1.0) == [1.3, 1.2, 1.0]
 
 
+def test_default_gamma_preserves_temporal_weighting():
+    got = discounted_turn_advantages([1.0, 0.0, 0.0], gamma=0.95)
+    assert abs(got[0] - 1.0) < 1e-8
+    assert abs(got[1]) < 1e-8
+
+
 def test_discounted_advantages_gamma_half():
     got = discounted_turn_advantages([1.0, 1.0, 1.0], gamma=0.5)
     assert abs(got[2] - 1.0) < 1e-8
