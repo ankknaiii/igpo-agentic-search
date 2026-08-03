@@ -36,7 +36,7 @@ Example (search then answer):
 I should search for the capital of France.
 </think>
 <tool_call>
-{"name": "web_search", "arguments": {"query": "capital of France"}}
+{{"name": "web_search", "arguments": {{"query": "capital of France"}}}}
 </tool_call>
 
 After tool results arrive, either search again or answer:
