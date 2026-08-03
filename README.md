@@ -1,117 +1,152 @@
-# Information Gain-based Policy Optimization for Multi-Turn Search Agents
+## Information Gain–based Policy Optimization (IGPO)
+
+Implementation of the agentic RL framework proposed in **[Information Gain-based Policy Optimization: A Simple and Effective Approach for Multi-Turn Search Agents](https://arxiv.org/abs/2510.14967)** (Wang et al., ICLR 2026).
+
+This repository is a **lightweight, single-GPU / Colab reproduction** of the core algorithm (Eq. 3–8): turn-level *information gain* process rewards under a GRPO-style clipped surrogate, for multi-turn search agents.
+
+Official full-scale training stack (veRL / multi-node): [GuoqingWang1/IGPO](https://github.com/GuoqingWang1/IGPO)
 
 [![Paper](https://img.shields.io/badge/Paper-arXiv%3A2510.14967-b31b1b)](https://arxiv.org/abs/2510.14967)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ankknaiii/igpo-agentic-search/blob/main/notebooks/train_igpo_colab.ipynb)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-基于论文 IGPO 的轻量级复现实现，支持 Colab 运行环境。该实现对齐 Wang et al., ICLR 2026（[arXiv:2510.14967](https://arxiv.org/abs/2510.14967)）中的 turn-level 信息增益奖励与 GRPO 风格目标（Eq. 3–8）。
+---
 
-官方完整训练系统（多机 / veRL）：https://github.com/GuoqingWang1/IGPO
+<p align="center">
+  <img src="./assets/igpo_framework.png" width="100%">
+</p>
+<p align="center"><em>Figure 1. Official IGPO training pipeline (from the paper / official repo): turn-level information-gain rewards + outcome F1 → discounted turn advantages → GRPO-style update. Tool responses are masked from the loss.</em></p>
 
-本仓库面向有限 GPU 资源下的算法验证与消融实验。
+<p align="center">
+  <img src="./assets/igpo_results.png" width="100%">
+</p>
+<p align="center"><em>Figure 2. Official reported results (ICLR 2026): IGPO vs prompt / outcome-RL / step-RL baselines across in-domain and OOD search QA benchmarks.</em></p>
 
-## 问题动机
+---
 
-纯结果驱动的 GRPO 对每条 rollout 仅分配单一标量奖励。在较小 group size 下，常见两类失效模式：
+## Why this exists
 
-| 查询难度 | 组内结果奖励 | 组相对 advantage |
-|----------|--------------|------------------|
-| 简单 | 全部正确 | 坍缩为零 |
-| 困难 | 全部错误 | 坍缩为零 |
+Outcome-only GRPO assigns **one scalar reward per rollout**. With small group sizes:
 
-零 advantage 无法产生策略梯度。多轮搜索场景下，工具调用轮次间缺乏有效的信用分配机制。
+| Regime | Within-group outcomes | Group-relative advantage |
+|--------|----------------------|---------------------------|
+| Easy queries | all correct | **collapse → 0** |
+| Hard queries | all incorrect | **collapse → 0** |
 
-## 方法概述
+Zero advantage ⇒ no policy gradient. Multi-turn search also lacks credit assignment across tool-use turns.
 
-每一轮智能体与环境的交互被视为对真实答案信念的增量更新。在 teacher forcing 条件下：
+IGPO’s claim is simple and strong: treat each search turn as incremental information acquisition about the ground truth; reward the **adjacent-turn change** in teacher-forced \(P(\text{GT}\mid\text{context})\). The signal is intrinsic, GT-aware, cheap (no MCTS / external RM), and remains informative when outcomes collapse.
+
+---
+
+## Method (aligned with the paper)
+
+Teacher-forced geometric-mean probability of the ground-truth answer:
 
 ```text
 π_θ(a | q, o_≤t) = exp( (1/L) Σ_j log π_θ(a_j | q, o_≤t, a_<j) )
-r_t = π_θ(a | q, o_≤t) - π_θ(a | q, o_≤t-1) ,   1 ≤ t < T
-r_T = F1(â, a)   # 或格式惩罚
 ```
 
-默认采用 `prob_diff`，并支持 `log_prob_diff`。组内对信息增益奖励与结果奖励执行 z-normalization（`separate` 或 `joint`），再计算折扣 turn-level advantage：
+Turn-level information gain (default `prob_diff`) and final outcome reward:
+
+```text
+r_t = π_θ(a | q, o_≤t) - π_θ(a | q, o_≤t-1) ,   1 ≤ t < T
+r_T = F1(â, a)   # or format penalty
+```
+
+Group z-normalization (`separate` or `joint`), then discounted turn advantages:
 
 ```text
 Ã_t = Σ_{k=t}^{T} γ^{k-t} A_k
 ```
 
-`gamma` 控制 turn-level advantage 的衰减速率；当 `gamma=1.0` 时，各 turn 的 advantage 退化为后续奖励的简单求和。默认值为 `0.95`。工具响应在 surrogate loss 中被掩码。
+Optimize with a GRPO-style clipped surrogate using turn-broadcast advantages (Eq. 8). Sampling token ids are retained **without** decode→encode round-trips so importance ratios remain valid. Default `ppo_epochs=4` so clipping is not vacuous.
 
-## 环境依赖
+`gamma` controls temporal credit; default `0.95`. At `gamma=1.0`, advantages reduce to undiscounted sums of future normalized rewards.
 
-| 项目 | 要求 |
-|------|------|
-| Python | >= 3.10 |
-| CUDA | 建议 11.8+（CPU 可运行完整性校验） |
-| 关键依赖 | `torch`, `transformers`, `peft`, `accelerate`, `modelscope`, `datasets`, `numpy`, `scipy`, `matplotlib`, `tqdm` |
+---
+
+## Stack / frameworks used
+
+| Layer | Choice | Role in this repo |
+|-------|--------|-------------------|
+| Policy optimization | **GRPO / IGPO** (DeepSeekMath lineage + Wang et al. 2026) | Group-relative advantages; turn-level IG rewards |
+| Surrogate | **PPO clip** (Schulman et al. 2017) | Multi-epoch updates with `clip_eps` |
+| Base model | **Qwen2.5-Instruct** (0.5B default; 1.5B/3B optional) | Actor / sampling / teacher forcing |
+| Adaptation | **LoRA (PEFT)** | Trainable adapters on T4-class GPUs |
+| Model hub | **ModelScope → Hugging Face** | Dual-source load (`model_source=auto`) |
+| Agent loop | Multi-turn `<think>` / `<tool_call>` / `<answer>` | Search-agent trajectory format (DeepResearcher-style) |
+| Retrieval | Offline corpus (+ optional noise) | Deterministic mock KB (no Serper required) |
+| Eval | Held-out JSONL + greedy decode | F1 / EM / collapse / mean \|IG\| |
+
+Official paper experiments use **veRL + live web search + Qwen2.5-7B** on 8×A100. This repo keeps the **same objective**, on a stack you can actually run and ablate on Colab.
+
+```text
+Query ──► Rollout (G samples) ──► IG_t (teacher force GT) + F1_T
+                │
+                ▼
+      group z-norm (separate IG / F1)
+                │
+                ▼
+      Ã_t = discounted turn advantages
+                │
+                ▼
+      PPO/GRPO clip  ×  ppo_epochs   (tool tokens masked)
+```
+
+---
+
+## Install
 
 ```bash
+git clone https://github.com/ankknaiii/igpo-agentic-search.git
+cd igpo-agentic-search
 pip install -e ".[dev]"
 ```
 
-## 快速开始
-
-### 本地运行
+Integrity checks (no GPU required):
 
 ```bash
 python scripts/integrity_check.py
 pytest -q
 ```
 
-轻量级训练验证：
+---
 
-```bash
-python scripts/integrity_check.py --train-steps 1
-```
+## One-click Colab
 
-### Colab 运行
+1. Open: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ankknaiii/igpo-agentic-search/blob/main/notebooks/train_igpo_colab.ipynb)
+2. Runtime → **T4 GPU**
+3. Runtime → **Run all**
 
-打开上方 Colab 徽章对应 Notebook。运行环境选择 T4 GPU，按顺序执行单元格。首个代码单元格将自动克隆本仓库。
+The pipeline cell will: sync `main` → fix Colab `torchao` conflicts → install → unit tests → short IGPO train → plot curves.
 
-默认基座模型为 `Qwen/Qwen2.5-0.5B-Instruct`（LoRA）。在显存允许的情况下，可通过 `TrainConfig.model_name` 切换至 1.5B 或 3B 规模的 Instruct 模型。模型加载默认 `model_source="auto"`：优先 ModelScope，失败时回退至 HuggingFace。
+---
 
-## 配置说明
-
-| 字段 | 类型 | 默认值 | 含义 |
-|------|------|--------|------|
-| `model_name` | str | `Qwen/Qwen2.5-0.5B-Instruct` | 基座模型标识 |
-| `model_source` | str | `auto` | `modelscope` / `huggingface` / `auto` |
-| `algo` | str | `igpo` | `igpo` 或 `grpo` |
-| `max_steps` | int | 500 | 训练步数 |
-| `prompts_per_step` | int | 4 | 每步采样的问题数 |
-| `group_size` | int | 8 | 每个问题的 rollout 数 |
-| `max_turns` | int | 3 | 最大交互轮数 |
-| `ppo_epochs` | int | 4 | 每个 batch 的 PPO 内循环轮数 |
-| `gamma` | float | 0.95 | turn-level advantage 折扣因子 |
-| `clip_eps` | float | 0.2 | PPO clip 阈值 |
-| `kl_coef` | float | 0.001 | KL 正则系数 |
-| `info_gain_type` | str | `prob_diff` | `prob_diff` 或 `log_prob_diff` |
-| `info_gain_norm_mode` | str | `separate` | `separate` 或 `joint` |
-| `eval_every` | int | 50 | 评估间隔（步） |
-| `eval_samples` | int | 100 | 每次评估样本数 |
-| `learning_rate` | float | 1e-5 | 优化器学习率 |
-| `seed` | int | 42 | 随机种子 |
-
-算法切换：
+## Usage
 
 ```python
-TrainConfig(algo="grpo")  # 纯结果奖励
-TrainConfig(algo="igpo")  # 信息增益 + 结果奖励
+from igpo.train.trainer import TrainConfig, run_training
+
+cfg = TrainConfig(
+    model_name="Qwen/Qwen2.5-0.5B-Instruct",
+    model_source="auto",      # ModelScope first, Hugging Face fallback
+    algo="igpo",              # or "grpo" for outcome-only baseline
+    max_steps=50,
+    prompts_per_step=4,
+    group_size=8,
+    ppo_epochs=4,
+    gamma=0.95,
+    info_gain_type="prob_diff",
+    info_gain_norm_mode="separate",
+    output_dir="./outputs/igpo",
+    eval_every=10,
+)
+
+history = run_training(cfg)
 ```
 
-主要记录指标：`collapse_rate`、`mean_f1`、`mean_abs_ig`、`mean_ratio`、`clipfrac`。
-
-## 评估方法
-
-- 训练集：`igpo/data/qa_offline.jsonl`（200 条）
-- 评估集：`igpo/data/qa_eval.jsonl`（50 条 held-out，与训练集无重叠）
-- 指标：word-level F1、Exact Match、outcome collapse rate、mean \|IG\|
-- 流程：训练过程中按 `eval_every` 调用 `IGPOEvaluator`；评估阶段 `temperature=0` 贪心解码
-- 结果写入：`outputs/*/eval_metrics.jsonl`
-
-## 消融实验
+Ablation (same hparams, multiple seeds):
 
 ```bash
 python scripts/run_ablation.py --algo igpo --seed 1 --seed 2 --seed 3 --max_steps 50
@@ -119,44 +154,77 @@ python scripts/run_ablation.py --algo grpo --seed 1 --seed 2 --seed 3 --max_step
 python scripts/analyze_ablation.py --input_dir ./ablation_results --metric collapse_rate
 ```
 
-对比方法保持模型、数据、超参数一致，仅切换 `algo`。多随机种子结果以均值±标准差报告，并执行 Welch t-test。
+---
 
-## 仓库结构
+## Repository layout
 
 ```text
 igpo/
-  rewards/       结果 F1；信息增益过程奖励
-  advantage/     组归一化；折扣 turn advantage
-  algo/          clipped surrogate 目标
-  env/           离线检索语料库
-  agent/         多轮 rollout 与信念跟踪
-  train/         LoRA 训练器
-  eval/          held-out 评估器
-  data/          离线训练集与评估集
+  rewards/       outcome F1 (SQuAD-style) + information-gain process reward
+  advantage/     group normalization + discounted turn advantages
+  algo/          clipped surrogate + unbiased KL estimate
+  env/           offline retrieval corpus
+  agent/         multi-turn rollout (raw sampled token ids retained)
+  train/         LoRA trainer (PPO epochs, warmup, checkpointing)
+  eval/          held-out greedy evaluator
+  data/          qa_offline.jsonl (200) · qa_eval.jsonl (50)
 notebooks/train_igpo_colab.ipynb
 scripts/integrity_check.py
 scripts/run_ablation.py
 scripts/analyze_ablation.py
-tests/
+assets/          paper figures (framework / results)
 ```
 
-## 与官方实现的差异说明
+---
 
-| 方面 | 本仓库 | 官方 IGPO |
-|------|--------|-----------|
-| 算力 | 单卡 / Colab T4 | 8×A100 |
-| 框架 | 轻量级训练器 | veRL + Ray |
-| 检索 | 离线检索语料库 | 在线 Web Search API |
-| 模型 | 0.5B–3B + LoRA | Qwen2.5-7B |
-| 数据规模 | 离线 200/50 | 大规模基准训练 |
-| 算法 | 对齐 Eq. 3–8；`prob_diff` + `separate` | 完整训练系统 |
+## Config surface
 
-## 已知限制
+| Field | Default | Meaning |
+|-------|---------|---------|
+| `algo` | `igpo` | `igpo` or `grpo` |
+| `model_source` | `auto` | `modelscope` / `huggingface` / `auto` |
+| `max_steps` | `500` | outer optimization steps |
+| `group_size` | `8` | rollouts per prompt (GRPO group) |
+| `ppo_epochs` | `4` | inner surrogate epochs per batch |
+| `gamma` | `0.95` | turn-advantage discount |
+| `clip_eps` | `0.2` | PPO clip |
+| `kl_coef` | `0.001` | KL to frozen base (LoRA-off) |
+| `info_gain_type` | `prob_diff` | or `log_prob_diff` |
+| `info_gain_norm_mode` | `separate` | or `joint` |
+| `eval_every` | `50` | held-out eval cadence |
 
-1. 离线检索语料库无法覆盖开放域实时网页检索分布。
-2. 默认 0.5B + LoRA 主要用于算法通路验证，不追求复现论文 7B 绝对指标。
-3. Teacher-forcing 信息增益依赖真实答案，不适用于无标准答案的开放生成任务。
-4. 完整消融需多 seed 与足够步数，Colab 免费配额下建议缩短 `max_steps`。
+Logged metrics: `mean_f1`, `collapse_rate`, `mean_abs_ig`, `mean_ratio`, `clipfrac`.
+
+On step 1 / epoch 0 the trainer prints `mean_ratio` (importance sampling sanity check; should be ≈ 1.0 before the first update accumulates).
+
+---
+
+## Scope vs official release
+
+| | This repo | Official IGPO |
+|--|-----------|---------------|
+| Compute | Colab T4 / single GPU | 8×A100 |
+| Framework | lightweight trainer | veRL + Ray |
+| Retrieval | offline corpus + noise | live web search API |
+| Model | 0.5B–3B + LoRA | Qwen2.5-7B |
+| Objective | Eq. 3–8 | full system + curriculum options |
+
+**Known limits.** Offline retrieval is not open-web. 0.5B+LoRA is for algorithm verification, not paper-number matching. IG rewards require ground-truth answers (not open-ended unsupervised settings).
+
+---
+
+## Todo
+
+- [x] Preserve sampled token ids (no decode→encode) for valid IS ratios
+- [x] PPO multi-epoch loop + unbiased KL
+- [x] Turn-correct outcome reward; SQuAD Counter F1
+- [x] Offline corpus ≥50 docs; train/eval split 200/50
+- [x] ModelScope → HF dual-source load
+- [x] One-click Colab (`Runtime → Run all`)
+- [ ] Optional Serper/Bing tool server parity with official repo
+- [ ] Larger-scale ablations (3B+, more seeds) and published metric tables
+
+---
 
 ## Citation
 
@@ -165,6 +233,25 @@ tests/
   title={Information Gain-based Policy Optimization: A Simple and Effective Approach for Multi-Turn Search Agents},
   author={Guoqing Wang and Sunhao Dai and Guangze Ye and Zeyu Gan and Wei Yao and Yong Deng and Xiaofeng Wu and Zhenzhe Ying},
   booktitle={ICLR},
-  year={2026}
+  year={2026},
+  url={https://arxiv.org/abs/2510.14967}
+}
+```
+
+```bibtex
+@article{shao2024deepseekmath,
+  title={DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models},
+  author={Shao, Zhihong and others},
+  journal={arXiv preprint arXiv:2402.03300},
+  year={2024}
+}
+```
+
+```bibtex
+@article{schulman2017ppo,
+  title={Proximal Policy Optimization Algorithms},
+  author={Schulman, John and Wolski, Filip and Dhariwal, Prafulla and Radford, Alec and Klimov, Oleg},
+  journal={arXiv preprint arXiv:1707.06347},
+  year={2017}
 }
 ```

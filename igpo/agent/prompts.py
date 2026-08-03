@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
-SYSTEM_PROMPT = """Today is {today}.
+from string import Template
+
+# Use string.Template ($today) so JSON braces in tool-call examples are not interpreted
+# as format-string placeholders.
+_SYSTEM_PROMPT = Template(
+    """Today is $today.
 You are an AI Assistant.
 The question I give you is a complex question that may require deep research to answer.
 I will provide you with tools to help you answer the question:
@@ -24,7 +29,7 @@ or
 YOUR THINKING PROCESS
 </think>
 <tool_call>
-{{"name": "web_search", "arguments": {{"query": "YOUR QUERY"}}}}
+{"name": "web_search", "arguments": {"query": "YOUR QUERY"}}
 </tool_call>
 
 You should always follow the above two formats strictly.
@@ -36,7 +41,7 @@ Example (search then answer):
 I should search for the capital of France.
 </think>
 <tool_call>
-{{"name": "web_search", "arguments": {{"query": "capital of France"}}}}
+{"name": "web_search", "arguments": {"query": "capital of France"}}
 </tool_call>
 
 After tool results arrive, either search again or answer:
@@ -47,11 +52,14 @@ The results say Paris is the capital.
 Paris
 </answer>
 """
+)
 
 
 def build_system_prompt(today: str = "2026-08-02") -> str:
-    return SYSTEM_PROMPT.format(today=today)
+    """Construct the system prompt with the current date substituted."""
+    return _SYSTEM_PROMPT.substitute(today=today)
 
 
 def build_user_prompt(question: str) -> str:
+    """Construct the user turn for a QA query."""
     return f"Question: {question}"

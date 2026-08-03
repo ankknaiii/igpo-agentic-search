@@ -14,16 +14,44 @@ from __future__ import annotations
 import json
 import logging
 import random
+import subprocess
+import sys
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
 import numpy as np
 import torch
-from peft import LoraConfig, PeftModel, get_peft_model
 from torch.optim import AdamW
 from tqdm.auto import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer, get_cosine_schedule_with_warmup
+
+
+def _purge_incompatible_torchao() -> None:
+    """Remove Colab-preinstalled torchao versions that break peft imports."""
+    try:
+        import importlib.metadata as md
+
+        ver = md.version("torchao")
+    except Exception:
+        return
+    # peft requires torchao > 0.16.0 when the package is installed.
+    try:
+        from packaging.version import Version
+
+        if Version(ver) > Version("0.16.0"):
+            return
+    except Exception:
+        pass
+    subprocess.call([sys.executable, "-m", "pip", "uninstall", "-y", "torchao"])
+
+
+def _import_peft():
+    """Import peft after neutralizing incompatible torchao installs."""
+    _purge_incompatible_torchao()
+    from peft import LoraConfig, PeftModel, get_peft_model
+
+    return LoraConfig, PeftModel, get_peft_model
 
 from igpo.advantage.turn_level import (
     TurnRewardTrajectory,
@@ -161,6 +189,7 @@ def _load_model_and_tokenizer(cfg: TrainConfig, dtype: torch.dtype):
 
 def build_model_and_tokenizer(cfg: TrainConfig, device: torch.device):
     """Construct a LoRA-adapted causal LM and tokenizer."""
+    LoraConfig, _PeftModel, get_peft_model = _import_peft()
     dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
     model, tokenizer = _load_model_and_tokenizer(cfg, dtype)
     if tokenizer.pad_token is None:
@@ -322,6 +351,7 @@ class IGPOTrainer:
         self.history: list[StepMetrics] = []
         self.output_dir = Path(cfg.output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
+        _, PeftModel, _ = _import_peft()
         self._has_peft = isinstance(self.model, PeftModel)
         self.evaluator = IGPOEvaluator(
             self.model,
