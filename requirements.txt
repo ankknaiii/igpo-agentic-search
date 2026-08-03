@@ -2,6 +2,7 @@ torch>=2.1.0
 transformers>=4.45.0
 accelerate>=0.33.0
 peft>=0.12.0
+torchao>=0.16.0
 datasets>=2.20.0
 modelscope>=1.18.0
 numpy>=1.24.0
